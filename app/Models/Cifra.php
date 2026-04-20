@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Cifra extends Model
+{
+    protected $fillable = [
+        'titulo',
+        'artista',
+        'tom',
+        'categoria',
+        'conteudo',
+        'user_id',
+    ];
+}
