@@ -1,43 +1,55 @@
-{{-- resources/views/cifras/index.blade.php --}}
-
 @extends('layouts.app')
 
 @section('content')
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+<div class="space-y-8">
 
-    {{-- Cabeçalho --}}
     <div>
-        <h2 class="text-3xl font-semibold text-gray-900">
-            Últimas Cifras
+        <h2 class="text-3xl font-semibold text-gray-800">
+            Minhas Cifras
         </h2>
 
         <p class="text-gray-500 text-sm mt-1">
-            Organize e edite suas músicas rapidamente.
+            Organize seu repertório.
         </p>
     </div>
 
-    {{-- Criar Cifra --}}
+    <!-- FORM -->
     <div class="bg-white p-6 rounded-3xl shadow-lg">
 
-        <form method="GET" action="{{ route('cifras.create') }}">
+        <form method="POST" action="{{ route('cifras.store') }}">
+            @csrf
+
+            <div class="grid md:grid-cols-3 gap-4 mb-4">
+
+                <input type="text" name="titulo"
+                    placeholder="Título"
+                    required
+                    class="w-full bg-gray-100 rounded-xl p-3">
+
+                <input type="text" name="artista"
+                    placeholder="Artista"
+                    class="w-full bg-gray-100 rounded-xl p-3">
+
+                <input type="text" name="tom"
+                    placeholder="Tom"
+                    class="w-full bg-gray-100 rounded-xl p-3">
+
+            </div>
 
             <textarea
-                class="w-full bg-gray-50 border-0 rounded-2xl p-4 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none"
-                rows="4"
-                readonly
-                placeholder="Digite o nome da música ou comece uma nova cifra..."
+                name="conteudo"
+                rows="6"
+                placeholder="Digite a cifra..."
+                required
+                class="w-full bg-gray-100 rounded-xl p-4"
             ></textarea>
 
-            <div class="flex justify-between items-center mt-4">
+            <div class="mt-4 text-right">
 
-                <span class="text-sm text-gray-400">
-                    Crie uma nova música
-                </span>
-
-                <button
-                    class="bg-emerald-500 text-white px-5 py-2.5 rounded-2xl hover:bg-emerald-600 transition font-medium shadow">
-                    Nova Cifra
+                <button type="submit"
+                    class="bg-green-600 text-white px-6 py-3 rounded-xl hover:bg-green-700 transition">
+                    Salvar Cifra
                 </button>
 
             </div>
@@ -46,74 +58,26 @@
 
     </div>
 
-    {{-- Feed --}}
+    <!-- LISTA -->
     <div class="space-y-4">
 
-        @forelse ($cifras as $cifra)
+        @foreach($cifras as $cifra)
 
-            <div class="bg-white p-5 rounded-3xl shadow-md">
+        <div class="bg-white p-5 rounded-3xl shadow-md">
 
-                <div class="flex justify-between items-center mb-2">
+            <h3 class="font-bold text-lg">
+                {{ $cifra->titulo }}
+            </h3>
 
-                    <div>
-                        <span class="font-semibold text-sm text-gray-900 block">
-                            {{ $cifra->titulo }}
-                        </span>
+            <p class="text-sm text-gray-500 mb-3">
+                {{ $cifra->artista }} | {{ $cifra->tom }}
+            </p>
 
-                        <span class="text-xs text-gray-400">
-                            {{ $cifra->artista ?: 'Sem artista informado' }}
-                        </span>
-                    </div>
+            <pre class="whitespace-pre-wrap">{{ $cifra->conteudo }}</pre>
 
-                    <span class="text-xs text-gray-400">
-                        {{ $cifra->created_at->diffForHumans() }}
-                    </span>
+        </div>
 
-                </div>
-
-                <p class="text-gray-700 whitespace-pre-line leading-7">
-                    {{ Str::limit($cifra->conteudo, 180) }}
-                </p>
-
-                @if ($cifra->user_id === auth()->id())
-
-                    <div class="flex gap-4 mt-4 text-sm">
-
-                        <a href="{{ route('cifras.show', $cifra) }}"
-                           class="text-gray-500 hover:text-emerald-500 transition font-medium">
-                            Ver
-                        </a>
-
-                        <a href="{{ route('cifras.edit', $cifra) }}"
-                           class="text-gray-500 hover:text-blue-500 transition font-medium">
-                            Editar
-                        </a>
-
-                        <form method="POST" action="{{ route('cifras.destroy', $cifra) }}">
-                            @csrf
-                            @method('DELETE')
-
-                            <button
-                                onclick="return confirm('Deseja excluir esta cifra?')"
-                                class="text-gray-500 hover:text-red-500 transition font-medium">
-                                Excluir
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                @endif
-
-            </div>
-
-        @empty
-
-            <div class="bg-white rounded-3xl shadow-md text-center py-12 text-gray-500">
-                Ainda não existem cifras cadastradas...
-            </div>
-
-        @endforelse
+        @endforeach
 
     </div>
 
